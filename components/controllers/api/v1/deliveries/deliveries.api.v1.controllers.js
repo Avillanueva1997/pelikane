@@ -17,9 +17,12 @@ const router = express.Router()
 // CRUD requests
 // deliveries
 router.route('/')
-  .get(
+/*   .get(
     (req, res, next) => handler(getValidator, req, res, next, validations['mainGet']),
-    (req, res, next) => responses(deliveriesCommonServices.find, req, res, next))
+    (req, res, next) => responses(deliveriesCommonServices.find, req, res, next)) */
+  .get(
+    (req, res, next) => handler(getValidator, req, res, next, validations['secondGet']),
+    (req, res, next) => responses(deliveriesCommonServices.secondFind, req, res, next))
   .post(
     (req, res, next) => handler(validator, req, res, next, validations['mainPost']),
     (req, res, next) => responses(deliveriesCommonServices.create, req, res, next))

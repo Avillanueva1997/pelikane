@@ -1,6 +1,6 @@
 import Deliveries from '@/models/Deliveries.model';
 
-const find = async (req) => {
+/* const find = async (req) => {
   // some vars
   let query = {};
   let limit = req.body.limit ? (req.body.limit > 100 ? 100 : parseInt(req.body.limit)) : 100;
@@ -31,6 +31,40 @@ const find = async (req) => {
     totalResults: totalResults,
     deliveries
   }
+} */
+
+const secondFind = async (req) => {
+
+  let query = {};
+  let limit = req.body.limit ? (req.body.limit > 100 ? 100 : parseInt(req.body.limit)) : 100;
+  let skip = req.body.page ? ((Math.max(0, parseInt(req.body.page)) - 1) * limit) : 0;
+  let sort = { _id: 1 };
+
+  query['when'] = {
+    '$gte': req.body.from,
+    '$lt': req.body.to
+  };
+
+  let deliveries = await Deliveries.find(query).populate("products").skip(skip).sort(sort).limit(limit);
+
+  let information = [];
+
+  deliveries.forEach(function (delivery) {
+    let products = delivery.products;
+    for (let i = 0; i < products.length; i++) {
+      let product = products[i];
+      let peso = product.weight;
+      if (peso >= Number(req.body.weight)) {
+        information.push(delivery);
+        break;
+      }
+    }
+  });
+
+  return {
+    totalResults: information.length,
+    information
+  }
 }
 
 const create = async (req) => {
@@ -48,7 +82,7 @@ const create = async (req) => {
 }
 
 const findOne = async (req) => {
-  let delivery = await Deliveries.findOne({_id: req.body.id});
+  let delivery = await Deliveries.findOne({ _id: req.body.id });
   if (!delivery) {
     throw {
       code: 404,
@@ -61,7 +95,8 @@ const findOne = async (req) => {
 }
 
 export default {
-  find,
+  //find,
   create,
-  findOne
+  findOne,
+  secondFind
 }
